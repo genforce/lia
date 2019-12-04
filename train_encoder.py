@@ -17,7 +17,7 @@ E_loss        = EasyDict(func_name='training.loss_encoder.E_perceptual_loss', fe
 D_loss        = EasyDict(func_name='training.loss_encoder.D_logistic_simplegp', r1_gamma=10.0)
 lr            = EasyDict(learning_rate=0.0001, decay_step=50000, decay_rate=0.8, stair=False)
 Data_dir      = EasyDict(data_train='../data/ffhq_128_train_6w5.tfrecords', data_test='../data/ffhq_128_test_5k.tfrecords')
-Decoder_pkl   = EasyDict(decoder_pkl='./network-snapshot-023315.pkl')
+Decoder_pkl   = EasyDict(decoder_pkl='./network-snapshot-023315.pkl') #the first stage training results
 tf_config     = {'rnd.np_random_seed': 1000}
 submit_config = dnnlib.SubmitConfig()
 

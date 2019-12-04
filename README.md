@@ -22,8 +22,8 @@ We use a different name just to distinguish it from training script in the secon
 
 Prepare for training Encoder
 
-1. Add dataset's path to `data_train` and `data_test` in (`Data_dir`)
-2. Add decoder's path to `decoder_pkl` (derived from the first-stage training) in (`Decoder_pkl`)
+1. Add dataset's path to `data_train` and `data_test` in (`Data_dir`).
+2. Add decoder's path to `decoder_pkl` (derived from the first-stage training) in (`Decoder_pkl`).
 
 Run
 

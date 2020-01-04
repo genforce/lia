@@ -434,7 +434,7 @@ def G_mapping(
             x = apply_bias(x, lrmul=mapping_lrmul)
             x = act(x)
 
-    x = normalize(x)
+    #x = normalize(x)
 
     # Broadcast.
     if dlatent_broadcast is not None:

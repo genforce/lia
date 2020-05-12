@@ -1,20 +1,34 @@
 import numpy as np
-import tensorflow as tf
 import scipy
 import scipy.misc
+import glob
+import cv2
+from training.misc import adjust_dynamic_range
+import pickle
 
-def to_255(data, drange_in, drange_out):
-    if drange_in != drange_out:
-        scale = (np.float32(drange_out[1]) - np.float32(drange_out[0])) / (np.float32(drange_in[1]) - np.float32(drange_in[0]))
-        bias = (np.float32(drange_out[0]) - np.float32(drange_in[0]) * scale)
-        data = data * scale + bias
-    return data
 
-def to_01(image):
-    image = tf.transpose(image, [0, 2, 3, 1])
-    image = image + 1.
-    image = image / 2.
-    return image
+def load_pkl(file_or_url):
+    with open(file_or_url, 'rb') as file:
+        return pickle.load(file, encoding='latin1')
+
+
+def preparing_data(im_path, img_type):
+    """
+    read images from the given path, and transform images from [0, 255] to [-1., 1.]
+
+    return image shape: [N, C, H, W]
+    """
+    images = sorted(glob.glob(im_path + '/*' + img_type))
+    images_name = []
+    input_images = []
+    for im_name in images:
+        input_images.append(cv2.imread(im_name)[:, :, ::-1])
+        images_name.append(im_name.split('/')[-1].split('.')[0])
+    input_images = np.asarray(input_images)
+    input_images = adjust_dynamic_range(input_images.astype(np.float32), [0, 255], [-1., 1.])
+    input_images = input_images.transpose(0, 3, 1, 2)
+    return input_images, images_name
+
 
 def to_range(images, min_value=0.0, max_value=1.0, dtype=None):
     """

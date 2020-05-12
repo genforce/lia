@@ -9,8 +9,9 @@
 **Figure:** *Image reconstruction using LIA on different datasets.*
 
 In the repository, we verify that the disentanglement of the latent space is 
-the decisive factor of learning a high-quality encoder for VAE/GAN. Based on 
-the disentanglement argument, we develop a new model called Latently Invertible Autoencoder (LIA).
+the decisive factor of learning a high-quality encoder for GAN. Based on 
+the disentanglement argument, we develop a new model called Latently Invertible Autoencoder (LIA), 
+which could invert an image into the latent spaces of W (disentanglement) and Z (entanglement) of stylegan, simultaneously. 
 
 
 [[Paper](https://drive.google.com/open?id=1O4MCURPHKZpStlkA5Bvucclw6m4eqwcG)]

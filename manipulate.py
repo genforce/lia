@@ -1,16 +1,17 @@
 """Manipulates real images with LIA with given boundary."""
 
+import os
+import sys
+import argparse
+from tqdm import tqdm
 import tensorflow as tf
 import numpy as np
-import os
+
 from utils import imwrite, immerge
-from utils import preparing_data, load_pkl
-import sys
+from utils import preparing_data
+from training.misc import load_pkl
 import dnnlib
 import dnnlib.tflib as tflib
-from tqdm import tqdm
-import argparse
-
 
 
 def manipulate(latent_code,
@@ -51,58 +52,8 @@ def manipulate(latent_code,
     return repeated_code
 
 
-
-def main():
-
-    os.environ["CUDA_VISIBLE_DEVICES"] = args.gpu_id
-    tf_config = {'rnd.np_random_seed': 1000}
-    tflib.init_tf(tf_config)
-    assert os.path.exists(args.restore_path)
-    assert os.path.exists(args.boundary)
-    E, _, _, Gs, _ = load_pkl(args.restore_path)
-    num_layers, latent_dim = Gs.components.synthesis.input_shape[1:3]
-
-    # Building graph
-    real = tf.placeholder('float32', [None, 3, args.image_size, args.image_size], name='real_image')
-    W = tf.placeholder('float32', [None, num_layers, latent_dim], name='Gaussian')
-    encoder_w = E.get_output_for(real, phase=False)
-    reconstruction_from_w = Gs.components.synthesis.get_output_for(W, randomize_noise=False)
-    sess = tf.get_default_session()
-
-    input_images, images_name = preparing_data(im_path=args.data_dir_test, img_type=args.img_type)
-
-    boundary = np.load(args.boundary)
-    boundary_name = args.boundary.split('/')[-1].split('_')[0]
-    save_dir = args.output_dir or './outputs/manipulation'
-    os.makedirs(save_dir, exist_ok=True)
-
-    print('manipulation in w space on %s' % (boundary_name))
-    for i in tqdm(range(input_images.shape[0])):
-        input_image = input_images[i:i+1]
-        im_name = images_name[i]
-        latent_code = sess.run(encoder_w, feed_dict={real: input_image})
-        codes = manipulate(latent_code,
-                           boundary,
-                           num_layers=num_layers,
-                           step=args.step,
-                           start_distance=args.start_distance,
-                           end_distance=args.end_distance)
-        inputs = np.zeros((args.batch_size, num_layers, latent_dim), np.float32)
-        output_images = []
-        for idx in range(0, args.step, args.batch_size):
-            batch = codes[idx:idx + args.batch_size]
-            inputs[0:len(batch)] = batch
-            images = sess.run(reconstruction_from_w, feed_dict={W: inputs})
-            output_images.append(images[0:len(batch)])
-        output_images = np.concatenate(output_images, axis=0)
-        output_images = np.concatenate([input_image, output_images], axis=0)
-        output_images = output_images.transpose(0, 2, 3, 1)
-        imwrite(immerge(output_images, 1, args.step + 1), '%s/%s_%s.png' % (save_dir, im_name, boundary_name))
-
-
-
-if __name__ == "__main__":
-
+def parse_args():
+    """Parses arguments."""
     import signal
     signal.signal(signal.SIGINT, lambda x, y: sys.exit(0))
 
@@ -132,7 +83,61 @@ if __name__ == "__main__":
     parser.add_argument('--gpu_id', type=str, default='0',
                         help='Which GPU(s) to use. (default: `0`)')
 
-    args = parser.parse_args()
+    return parser.parse_args()
+
+
+def main():
+    """Main function."""
+    args = parse_args()
+    os.environ["CUDA_VISIBLE_DEVICES"] = args.gpu_id
+    tf_config = {'rnd.np_random_seed': 1000}
+    tflib.init_tf(tf_config)
+    assert os.path.exists(args.restore_path)
+    assert os.path.exists(args.boundary)
+    E, _, _, Gs, _ = load_pkl(args.restore_path)
+    num_layers, latent_dim = Gs.components.synthesis.input_shape[1:3]
+
+    # Building graph
+    real = tf.placeholder('float32', [None, 3, args.image_size, args.image_size], name='real_image')
+    W = tf.placeholder('float32', [None, num_layers, latent_dim], name='Gaussian')
+    encoder_w = E.get_output_for(real, phase=False)
+    reconstruction_from_w = Gs.components.synthesis.get_output_for(W, randomize_noise=False)
+    sess = tf.get_default_session()
+
+    # Preparing data
+    input_images, images_name = preparing_data(im_path=args.data_dir_test, img_type=args.img_type)
+
+    boundary = np.load(args.boundary)
+    boundary_name = args.boundary.split('/')[-1].split('_')[0]
+
+    save_dir = args.output_dir or './outputs/manipulation'
+    os.makedirs(save_dir, exist_ok=True)
+
+    print('manipulation in w space on %s' % (boundary_name))
+    for i in tqdm(range(input_images.shape[0])):
+        input_image = input_images[i:i+1]
+        im_name = images_name[i]
+        latent_code = sess.run(encoder_w, feed_dict={real: input_image})
+        codes = manipulate(latent_code,
+                           boundary,
+                           num_layers=num_layers,
+                           step=args.step,
+                           start_distance=args.start_distance,
+                           end_distance=args.end_distance)
+        inputs = np.zeros((args.batch_size, num_layers, latent_dim), np.float32)
+        output_images = []
+        for idx in range(0, args.step, args.batch_size):
+            batch = codes[idx:idx + args.batch_size]
+            inputs[0:len(batch)] = batch
+            images = sess.run(reconstruction_from_w, feed_dict={W: inputs})
+            output_images.append(images[0:len(batch)])
+        output_images = np.concatenate(output_images, axis=0)
+        output_images = np.concatenate([input_image, output_images], axis=0)
+        output_images = output_images.transpose(0, 2, 3, 1)
+        imwrite(immerge(output_images, 1, args.step + 1), '%s/%s_%s.png' %
+                (save_dir, im_name, boundary_name))
+
+
+
+if __name__ == "__main__":
     main()
-
-

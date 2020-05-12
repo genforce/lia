@@ -1,15 +1,11 @@
+"""Utility functions for reading and saving images."""
+
+import glob
 import numpy as np
 import scipy
 import scipy.misc
-import glob
 import cv2
 from training.misc import adjust_dynamic_range
-import pickle
-
-
-def load_pkl(file_or_url):
-    with open(file_or_url, 'rb') as file:
-        return pickle.load(file, encoding='latin1')
 
 
 def preparing_data(im_path, img_type):

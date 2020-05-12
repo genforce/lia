@@ -434,8 +434,6 @@ def G_mapping(
             x = apply_bias(x, lrmul=mapping_lrmul)
             x = act(x)
 
-    #x = normalize(x)
-
     # Broadcast.
     if dlatent_broadcast is not None:
         with tf.variable_scope('Broadcast'):
@@ -694,9 +692,6 @@ def G_mapping_ND(
     # mapping layers.
     for i in reversed(range(depth)):
         net = step(str(i), z=net,  width=hidden_width, flow_coupling=flow_coupling, reverse=True)
-
-#    with tf.variable_scope('Normalize'):
-#        net = normalize(net)
 
     # Broadcast.
     if dlatent_broadcast is not None:

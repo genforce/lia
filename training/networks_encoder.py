@@ -138,7 +138,12 @@ def residual_block_bn1(inputs, fin, fout, phase, scope): # resnet v2
 
 
 
-def Encoder(input_img, size=128, filter=64, filter_max=512, phase=True, **kwargs):
+def Encoder(input_img,
+            size=128,        # Size of the input image.
+            filter=64,
+            filter_max=512,
+            phase=True,
+            **kwargs):
     s0 = 4
     num_layers = int(np.log2(size / s0))
 
@@ -157,7 +162,7 @@ def Encoder(input_img, size=128, filter=64, filter_max=512, phase=True, **kwargs
 
         with tf.variable_scope('encoder_fc'):
             latent_w = dense(net, fmaps=512, gain=1, use_wscale=True)
-            latent_w = bn(latent_w, phase=phase, name='fc_1')
+            latent_w = bn(latent_w, phase=phase, name='fc')
 
         return latent_w
 

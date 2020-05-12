@@ -1,4 +1,4 @@
-## LIA (LIA: Latently Invertible Autoencoder with Adversarial Learning)
+## LIA (Disentangled Inference for GANs with Latently Invertible Autoencoder)
 
 ![Python 3.6](https://img.shields.io/badge/python-3.6-green.svg?style=plastic)
 ![TensorFlow 1.12.2](https://img.shields.io/badge/tensorflow-1.12.2-green.svg?style=plastic)

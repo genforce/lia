@@ -1,9 +1,74 @@
 ## LIA (LIA: Latently Invertible Autoencoder with Adversarial Learning)
 
-## Requirements
+![Python 3.6](https://img.shields.io/badge/python-3.6-green.svg?style=plastic)
+![TensorFlow 1.12.2](https://img.shields.io/badge/tensorflow-1.12.2-green.svg?style=plastic)
+![Keras 2.2.4](https://img.shields.io/badge/keras-2.2.4-green.svg?style=plastic)
 
- - Tensorflow (tested with v1.12.0)
- - Python3.6
+![image](./examples/teaser.png)
+
+**Figure:** *Image reconstruction using LIA on different datasets.*
+
+In the repository, we verify that the disentanglement of the latent space is 
+the decisive factor of learning a high-quality encoder for VAE/GAN. Based on 
+the disentanglement argument, we develop a new model called Latently Invertible Autoencoder (LIA).
+
+
+[[Paper](https://drive.google.com/open?id=1O4MCURPHKZpStlkA5Bvucclw6m4eqwcG)]
+
+
+## Testing
+
+### Pre-trained networks
+
+All pre-trained networks are available on Google Drive, or one could produce them by the training script.
+The weights are stored as Python PKL files, as StyleGAN does. The network weights contain 5 instances of 
+[dnnlib.tflib.Network](./dnnlib/tflib/network.py), i.e. E, G, D, Gs, NE.
+
+| Path | Description
+| :--- | :----------
+|[ffhq_128x128](https://drive.google.com/open?id=1H_H8GtJUbdM2PFapDZpnDRw7KPmU_lPh) | LIA trained with FFHQ dataset.
+|[cat_128x128](https://drive.google.com/open?id=1dNF2WMKbQY73e4GNeMFtAs4o93p2Jqzw) |  LIA trained with LSUN Cat dataset.
+|[bedroom_128x128](https://drive.google.com/open?id=1itqUH8VxOM74Ypcf8E26U1FtVB0qrDYP) | LIA trained with LSUN Bedroom dataset.
+|[car_128x96](https://drive.google.com/open?id=1Jbb1yua4nphUREnq0mXNTNcRxYPBRWyf) | LIA trained with LSUN Car dataset.
+
+
+1. Download the pre-trained network weights.
+2. Prepare the test data, such as `.png` images.
+
+### Sampling
+
+```bash
+MODEL_PATH='network-final-ffhq.pkl'
+python synthesize.py  --restore_path $MODEL_PATH
+```
+
+
+### Reconstruction
+
+```bash
+MODEL_PATH='network-final-ffhq.pkl'
+DATA_PATH='examples/ffhq'
+python reconstruction.py  --restore_path $MODEL_PATH --data_dir_test $DATA_PATH 
+```
+
+
+### Interpolation
+
+```bash
+MODEL_PATH='network-final-ffhq.pkl'
+DATA_PATH='examples/ffhq'
+python interpolate.py  --restore_path $MODEL_PATH  --data_dir_test $DATA_PATH
+```
+
+
+### Manipulation
+
+```bash
+MODEL_PATH='network-final-ffhq.pkl'
+DATA_PATH='examples/ffhq'
+BOUNDARY_PATH = 'boundaries/happy_w_boundary.npy'
+python manipulate.py  --restore_path $MODEL_PATH --data_dir_test $DATA_PATH --boundary $BOUNDARY_PATH
+ ```
 
 
 ## Training
@@ -30,96 +95,7 @@ Run
 `python train_encoder.py`
 
 
-
-## Using pre-trained networks
-
-All pre-trained networks are available on Google Drive, or one could produce them by the training script.
-The weights are stored as Python PKL files, as StyleGAN does. The network weights contain 5 instances of 
-[dnnlib.tflib.Network](./dnnlib/tflib/network.py), i.e. E, G, D, Gs, NE.
-
-| Path | Description
-| :--- | :----------
-|[LIA.pdf](https://drive.google.com/open?id=1O4MCURPHKZpStlkA5Bvucclw6m4eqwcG) | paper PDF.
-|[ffhq_128x128](https://drive.google.com/open?id=1H_H8GtJUbdM2PFapDZpnDRw7KPmU_lPh) | LIA trained with FFHQ dataset.
-|[cat_128x128](https://drive.google.com/open?id=1dNF2WMKbQY73e4GNeMFtAs4o93p2Jqzw) |  LIA trained with LSUN Cat dataset.
-|[bedroom_128x128](https://drive.google.com/open?id=1itqUH8VxOM74Ypcf8E26U1FtVB0qrDYP) | LIA trained with LSUN Bedroom dataset.
-|[car_128x96](https://drive.google.com/open?id=1Jbb1yua4nphUREnq0mXNTNcRxYPBRWyf) | LIA trained with LSUN Car dataset.
-|[boundaries](https://drive.google.com/open?id=1wB4l-nu1SdPEldLxxIJAZhkZSBPn5roZ) | Boundaries obtained by [InterFaceGAN](https://github.com/ShenYujun/InterFaceGAN) on FFHQ Dataset.
-
-
-## Testing
-
-1. Download the pre-trained network weights and the boundaries file.
-2. Prepare the test data, such as `.png` images.
-
-### Sampling
-
-```
-python test.py  --restore_path MODEL_PATH  --mode 0 --batch_size 16
-```
-||
-|:---------:|
-|![image_sample0](./examples/gen_ffhq_LIA.png)|
-|sampling results on FFHQ|
-|![image_sample1](./examples/gen_bedroom_LIA.png)|
-|sampling results on LSUN bedroom|
-|![image_sample2](./examples/gen_cat_LIA.png)|
-|sampling results on LSUN cat|
-|![image_sample3](./examples/gen_car_LIA.png)|
-|sampling results on LSUN car|
-
-### Reconstruction
-
-```
-python test.py  --data_dir_test DATA_PATH  --restore_path MODEL_PATH  --mode 1 --batch_size 8
-```
-||
-|:---------:|
-|![image_orin_ffhq_ori](./examples/ffhq_ori.png)|
-|![image_orin_ffhq_rec](./examples/ffhq_rec.png)|
-|FFHQ|
-|![image_orin_bedroom_ori](./examples/bedroom_ori.png)|
-|![image_orin_bedroom_rec](./examples/bedroom_rec.png)|
-|bedroom|
-|![image_orin_cat_ori](./examples/cat_ori.png)|
-|![image_orin_cat_rec](./examples/cat_rec.png)|
-|cat|
-|![image_orin_car_ori](./examples/car_ori.png)|
-|![image_orin_car_rec](./examples/car_rec.png)|
-|car|
-
-For each group images, the first row shows the
-original images and the second row shows the reconstructed images.
-
-### Interpolation
-```
-python test.py  --data_dir_test DATA_PATH  --restore_path MODEL_PATH  --mode 3
-```
-||
-|:---------:|
-|![image_orin_ffhq_rec](./examples/inter_ffhq.png)|
-|![image_orin_ffhq_rec](./examples/inter_bedroom.png)|
-|![image_orin_ffhq_rec](./examples/inter_cat.png)|
-|![image_orin_ffhq_rec](./examples/inter_car.png)|
-
-
-### Manipulation
-
-
-```
-python test.py  --data_dir_test DATA_PATH  --boundaries BOUNDARY_PATH --restore_path MODEL_PATH  --mode 4
-```
-||
-|:---------:|
-|![image_orin_ffhq_rec](./examples/mani_0.png)|
-|![image_orin_ffhq_rec](./examples/mani_1.png)|
-|![image_orin_ffhq_rec](./examples/mani_2.png)|
-
-Each row shows the
-original image, the reconstruction, glass, pose, gender, smile, and age.
-
-
-##Reference
+## Reference
 
  [StyleGAN](https://github.com/NVlabs/stylegan)
  

@@ -14,7 +14,7 @@ the disentanglement argument, we develop a new model called Latently Invertible 
 which could invert an image into the latent spaces of W (disentanglement) and Z (entanglement) of stylegan, simultaneously. 
 
 
-[[Paper](https://drive.google.com/open?id=1O4MCURPHKZpStlkA5Bvucclw6m4eqwcG)]
+[[Paper](https://arxiv.org/abs/1906.08090)]
 
 
 ## Testing

@@ -96,6 +96,18 @@ Run
 `python train_encoder.py`
 
 
+## Citation
+If you use this code for your research, please cite our paper:
+```
+@article{zhu2019lia,
+  title   = {Disentangled Inference for GANs with Latently Invertible Autoencoder},
+  author  = {Zhu, Jiapeng and Zhao, Deli and Zhang, Bo and Zhou, Bolei},
+  journal = {arXiv preprint arXiv:1906.08090},
+  year    = {2019}
+}
+```
+
+
 ## Reference
 
  [StyleGAN](https://github.com/NVlabs/stylegan)

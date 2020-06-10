@@ -49,7 +49,7 @@ python synthesize.py  --restore_path $MODEL_PATH
 ```bash
 MODEL_PATH='network-final-ffhq.pkl'
 DATA_PATH='examples/ffhq'
-python reconstruction.py  --restore_path $MODEL_PATH --data_dir_test $DATA_PATH 
+python reconstruct.py  --restore_path $MODEL_PATH --data_dir_test $DATA_PATH 
 ```
 
 

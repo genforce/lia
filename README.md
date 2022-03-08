@@ -100,10 +100,10 @@ Run
 If you use this code for your research, please cite our paper:
 ```
 @article{zhu2019lia,
-  title   = {Disentangled Inference for GANs with Latently Invertible Autoencoder},
+  title   = {Disentangled Inference for {GAN}s with Latently Invertible Autoencoder},
   author  = {Zhu, Jiapeng and Zhao, Deli and Zhang, Bo and Zhou, Bolei},
-  journal = {arXiv preprint arXiv:1906.08090},
-  year    = {2019}
+  journal = {IJCV},
+  year    = {2022}
 }
 ```
 
